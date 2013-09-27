@@ -239,7 +239,7 @@ function goodbyespammer()
 		
 		$uid = intval($mybb->input['uid']);
 		$user = get_user($uid);
-		if(!$user['uid'])
+		if(!$user['uid'] || !goodbyespammer_show($user['postnum'], $user['usergroup']))
 		{
 			error($lang->goodbyespammer_invalid_user);
 		}
@@ -670,12 +670,12 @@ function goodbyespammer_profile()
 {
 	global $mybb, $lang, $cache, $templates, $memprofile, $modoptions;
 	
-	// only show this if the current user has permission to use it and the profile we're on has less than the post limit for using this tool
+	
 	$groups = explode(",", $mybb->settings['goodbyespammergroups']);
 	$bangroup = $mybb->settings['goodbyespammerbangroup'];
 	$usergroups = $cache->read('usergroups');
 	
-	if(in_array($mybb->user['usergroup'], $groups) && (str_replace($mybb->settings['thousandssep'], '', $memprofile['postnum']) <= $mybb->settings['goodbyespammerpostlimit'] || $mybb->settings['goodbyespammerpostlimit'] == 0) && $memprofile['usergroup'] != $bangroup && $usergroups[$memprofile['usergroup']]['isbannedgroup'] != 1)
+	if(goodbyespammer_show($memprofile['postnum'], $memprofile['usergroup']))
 	{
 		$lang->load("goodbyespammer");
 		$lang->goodbyespammer_profile  = $lang->sprintf($lang->goodbyespammer_profile, $memprofile['username']);
@@ -688,17 +688,24 @@ function goodbyespammer_postbit(&$post)
 {
 	global $mybb, $lang, $cache, $theme, $templates;
 	
-	// only show this if the current user has permission to use it and the profile we're on has less than the post limit for using this tool
-	$groups = explode(",", $mybb->settings['goodbyespammergroups']);
-	$bangroup = $mybb->settings['goodbyespammerbangroup'];
-	$usergroups = $cache->read('usergroups');
-	
-	if(in_array($mybb->user['usergroup'], $groups) && (str_replace($mybb->settings['thousandssep'], '', $post['postnum']) <= $mybb->settings['goodbyespammerpostlimit'] || $mybb->settings['goodbyespammerpostlimit'] == 0) && $memprofile['usergroup'] != $bangroup && $usergroups[$post['usergroup']]['isbannedgroup'] != 1)
+	if(goodbyespammer_show($post['postnum'], $post['usergroup']))
 	{
 		$lang->load("goodbyespammer");
 		$lang->goodbyespammer_profile  = $lang->sprintf($lang->goodbyespammer_profile, $post['username']);
 		eval("\$goodbyespammer_postbit = \"".$templates->get('goodbyespammer_postbit')."\";");
 		$post['goodbyespammer'] = $goodbyespammer_postbit;
 	}
+}
+
+function goodbyespammer_show($post_count, $usergroup)
+{
+	global $mybb, $cache;
+	
+	// only show this if the current user has permission to use it and the user has less than the post limit for using this tool
+	$groups = explode(",", $mybb->settings['goodbyespammergroups']);
+	$bangroup = $mybb->settings['goodbyespammerbangroup'];
+	$usergroups = $cache->read('usergroups');
+	
+	return (in_array($mybb->user['usergroup'], $groups) && !$usergroups[$usergroup]['cancp'] && !$usergroups[$usergroup]['canmodcp'] && !$usergroups[$usergroup]['issupermod'] && (str_replace($mybb->settings['thousandssep'], '', $post_count) <= $mybb->settings['goodbyespammerpostlimit'] || $mybb->settings['goodbyespammerpostlimit'] == 0) && $usergroup != $bangroup && $usergroups[$usergroup]['isbannedgroup'] != 1);
 }
 ?>
