@@ -5,7 +5,7 @@ Author: MattRogowski
 Authorsite: http://mattrogowski.co.uk
 Version: 1.1
 Compatibility: 1.6.x
-Files: 2
+Files: 3
 Templates added: 5
 Template changes: 3
 Settings added: 5 (1 group)
@@ -29,9 +29,9 @@ Change Log:
 10/03/11 - v0.1 -> v0.1.1 -> Fixed a bug where various misc.php actions would display an error from Goodbye Spammer about selecting an invalid user. To upgrade, reupload ./inc/plugins/goodbyespammer.php
 29/03/11 - v0.1.1 -> v0.1.2 -> Added a setting to choose which usergroups can use Goodbye Spammer, and it will now add a moderator log when the tool is used. To upgrade, deactivate, reupload ./inc/plugins/goodbyespammer.php and ./inc/languages/english/goodbyespammer.lang.php, activate.
 31/07/11 - v0.1.2 -> v1.0 -> Fixed a bug where the reported posts count wasn't always updated. Fixed a bug where the link on the profile showed on banned user's profiles. Fixed a bug where the link showed on a profile if a user had more than the post count limit under certain conditions. Fixed a bug where the birthday would not be cleared. Fixed a bug where an SQL error would occur if you had deleted all custom profile fields. Added the ability to disable the post count limit check. Added the ability to ban spammer's IPs. To upgrade, deactivate, reupload ./inc/plugins/goodbyespammer.php and ./inc/languages/english/goodbyespammer.lang.php, activate. If you have entered a StopForumSpam API key you may want to make a note of it before you upgrade so you can enter it again afterwards.
-XX/XX/13 - v1.0 -> v1.1 -> Added link to Goodbye Spammer form in postbit. To upgrade, deactivate, upload ./images/goodbyespammer_postbit.png to ./images/, reupload ./inc/plugins/goodbyespammer.php and ./inc/languages/english/goodbyespammer.lang.php, activate.
+XX/XX/13 - v1.0 -> v1.1 -> Added link to Goodbye Spammer form in postbit. Fixed bug with replacement code appearing on profile page if all plugins are disabled. To upgrade, deactivate, upload ./images/goodbyespammer_postbit.png to ./images/, reupload ./inc/plugins/goodbyespammer.php and ./inc/languages/english/goodbyespammer.lang.php, activate.
 
-Copyright 2010 Matthew Rogowski
+Copyright 2013 Matthew Rogowski
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

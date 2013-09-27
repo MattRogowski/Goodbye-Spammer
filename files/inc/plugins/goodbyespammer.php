@@ -182,7 +182,7 @@ delete=Delete",
 		$db->insert_query("templates", $insert);
 	}
 	
-	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('</table>')."#i", '{goodbyespammer}</table>');
+	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('</table>')."#i", '<!--goodbyespammer--></table>');
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'subject_extra\']}')."#i", '{$post[\'subject_extra\']}<div class="float_right">{$post[\'goodbyespammer\']}</div>');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'subject_extra\']}')."#i", '{$post[\'subject_extra\']}<div class="float_right">{$post[\'goodbyespammer\']}</div>');
 }
@@ -217,7 +217,7 @@ function goodbyespammer_deactivate()
 	$templates = "'" . implode("','", $templates) . "'";
 	$db->delete_query("templates", "title IN ({$templates})");
 	
-	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('{goodbyespammer}')."#i", '', 0);
+	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('<!--goodbyespammer-->')."#i", '', 0);
 	find_replace_templatesets("postbit", "#".preg_quote('<div class="float_right">{$post[\'goodbyespammer\']}</div>')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('<div class="float_right">{$post[\'goodbyespammer\']}</div>')."#i", '', 0);
 }
@@ -680,11 +680,7 @@ function goodbyespammer_profile()
 		$lang->load("goodbyespammer");
 		$lang->goodbyespammer_profile  = $lang->sprintf($lang->goodbyespammer_profile, $memprofile['username']);
 		eval("\$goodbyespammer = \"".$templates->get('goodbyespammer_profile_link')."\";");
-		$modoptions = str_replace("{goodbyespammer}", $goodbyespammer, $modoptions);
-	}
-	else
-	{
-		$modoptions = str_replace("{goodbyespammer}", "", $modoptions);
+		$modoptions = str_replace("<!--goodbyespammer-->", $goodbyespammer, $modoptions);
 	}
 }
 
