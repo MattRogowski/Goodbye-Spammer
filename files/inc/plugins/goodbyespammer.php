@@ -1,8 +1,8 @@
 <?php
 /**
- * Goodbye Spammer 1.0
+ * Goodbye Spammer 1.1
 
- * Copyright 2010 Matthew Rogowski
+ * Copyright 2013 Matthew Rogowski
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ function goodbyespammer_info()
 	return array(
 		"name" => "Goodbye Spammer",
 		"description" => "Makes it easy to delete all traces of a spammer from your forum.",
-		"website" => "http://mattrogowski.co.uk",
+		"website" => "https://github.com/MattRogowski/Goodbye-Spammer",
 		"author" => "MattRogowski",
-		"authorsite" => "http://mattrogowski.co.uk",
-		"version" => "1.0",
+		"authorsite" => "https://github.com/MattRogowski",
+		"version" => "1.1",
 		"compatibility" => "16*",
 		"guid" => "9ec5cdfaf770be01b3364fac9916e573"
 	);
