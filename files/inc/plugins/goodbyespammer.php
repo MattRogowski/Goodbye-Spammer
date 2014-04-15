@@ -43,11 +43,11 @@ function goodbyespammer_info()
 function goodbyespammer_activate()
 {
 	global $db;
-	
+
 	require_once MYBB_ROOT . "inc/adminfunctions_templates.php";
-	
+
 	goodbyespammer_deactivate();
-	
+
 	$settings_group = array(
 		"name" => "goodbyespammer",
 		"title" => "Goodbye Spammer Settings",
@@ -57,7 +57,7 @@ function goodbyespammer_activate()
 	);
 	$db->insert_query("settinggroups", $settings_group);
 	$gid = $db->insert_id();
-	
+
 	$settings = array();
 	$settings[] = array(
 		"name" => "goodbyespammergroups",
@@ -111,9 +111,9 @@ delete=Delete",
 		$db->insert_query("settings", $insert);
 		$i++;
 	}
-	
+
 	rebuild_settings();
-	
+
 	$templates = array();
 	$templates[] = array(
 		"title" => "goodbyespammer",
@@ -181,7 +181,7 @@ delete=Delete",
 		);
 		$db->insert_query("templates", $insert);
 	}
-	
+
 	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('</table>')."#i", '<!--goodbyespammer--></table>');
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'subject_extra\']}')."#i", '{$post[\'subject_extra\']}<div class="float_right">{$post[\'goodbyespammer\']}</div>');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'subject_extra\']}')."#i", '{$post[\'subject_extra\']}<div class="float_right">{$post[\'goodbyespammer\']}</div>');
@@ -190,11 +190,11 @@ delete=Delete",
 function goodbyespammer_deactivate()
 {
 	global $db;
-	
+
 	require_once MYBB_ROOT . "inc/adminfunctions_templates.php";
-	
+
 	$db->delete_query("settinggroups", "name = 'goodbyespammer'");
-	
+
 	$settings = array(
 		"goodbyespammergroups",
 		"goodbyespammerpostlimit",
@@ -204,9 +204,9 @@ function goodbyespammer_deactivate()
 	);
 	$settings = "'" . implode("','", $settings) . "'";
 	$db->delete_query("settings", "name IN ({$settings})");
-	
+
 	rebuild_settings();
-	
+
 	$templates = array(
 		"goodbyespammer",
 		"goodbyespammer_option_checkbox",
@@ -216,7 +216,7 @@ function goodbyespammer_deactivate()
 	);
 	$templates = "'" . implode("','", $templates) . "'";
 	$db->delete_query("templates", "title IN ({$templates})");
-	
+
 	find_replace_templatesets("member_profile_modoptions", "#".preg_quote('<!--goodbyespammer-->')."#i", '', 0);
 	find_replace_templatesets("postbit", "#".preg_quote('<div class="float_right">{$post[\'goodbyespammer\']}</div>')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('<div class="float_right">{$post[\'goodbyespammer\']}</div>')."#i", '', 0);
@@ -225,18 +225,18 @@ function goodbyespammer_deactivate()
 function goodbyespammer()
 {
 	global $mybb, $db, $cache, $lang, $theme, $templates, $header, $headerinclude, $footer;
-	
+
 	if($mybb->input['action'] == "do_goodbyespammer" || $mybb->input['action'] == "goodbyespammer")
 	{
 		$lang->load("goodbyespammer");
 		$lang->load("member");
-		
+
 		$groups = explode(",", $mybb->settings['goodbyespammergroups']);
 		if(!in_array($mybb->user['usergroup'], $groups))
 		{
 			error_no_permission();
 		}
-		
+
 		$uid = intval($mybb->input['uid']);
 		$user = get_user($uid);
 		if(!$user['uid'] || !goodbyespammer_show($user['postnum'], $user['usergroup']))
@@ -249,16 +249,16 @@ function goodbyespammer()
 			error($lang->sprintf($lang->goodbyespammer_posts_too_high, $mybb->settings['goodbyespammerpostlimit']));
 		}
 	}
-	
+
 	if($mybb->input['action'] == "do_goodbyespammer")
 	{
 		verify_post_check($mybb->input['my_post_key']);
-		
+
 		$user_deleted = false;
-		
+
 		require_once MYBB_ROOT . "inc/class_moderation.php";
 		$moderation = new Moderation;
-		
+
 		// loop through what was submitted
 		foreach($mybb->input['actions'] as $action => $value)
 		{
@@ -374,7 +374,7 @@ function goodbyespammer()
 							);
 							$db->insert_query('banned', $insert);
 						}
-						
+
 						foreach(array($user['regip'], $user['lastip']) as $ip)
 						{
 							$query = $db->simple_select("banfilters", "*", "type = '1' AND filter = '".$db->escape_string($ip)."'");
@@ -388,14 +388,14 @@ function goodbyespammer()
 								$db->insert_query("banfilters", $insert);
 							}
 						}
-						
+
 						$update = array(
 							"usergroup" => intval($mybb->settings['goodbyespammerbangroup']),
 							"additionalgroups" => "",
 							"displaygroup" => 0
 						);
 						$db->update_query("users", $update, "uid = '{$uid}'");
-						
+
 						$cache->update_banned();
 						$cache->update_bannedips();
 					}
@@ -410,15 +410,15 @@ function goodbyespammer()
 						$db->delete_query("joinrequests", "uid = '{$uid}'");
 						$db->delete_query("warnings", "uid = '{$uid}'");
 						$db->delete_query("awaitingactivation", "uid='{$uid}'");
-						
+
 						update_stats(array('numusers' => '-1'));
-						
+
 						if($user['avatartype'] == "upload")
 						{
 							// Removes the ./ at the beginning the timestamp on the end...
 							@unlink("../".substr($user['avatar'], 2, -20));
 						}
-						
+
 						$user_deleted = true;
 					}
 					break;
@@ -427,11 +427,11 @@ function goodbyespammer()
 					break;
 			}
 		}
-		
+
 		$cache->update_reportedposts();
-		
+
 		log_moderator_action(array(), $lang->sprintf($lang->goodbyespammer_modlog, htmlspecialchars_uni($user['username'])));
-		
+
 		if($user_deleted)
 		{
 			redirect($mybb->settings['bburl'], $lang->goodbyespammer_success);
@@ -465,7 +465,7 @@ function goodbyespammer()
 			$description_var = $title_var . "_desc";
 			$title = $lang->$title_var;
 			$description = $lang->$description_var;
-			
+
 			switch($action)
 			{
 				case "deletethreads":
@@ -657,7 +657,7 @@ function goodbyespammer()
 					break;
 			}
 		}
-		
+
 		add_breadcrumb($lang->sprintf($lang->nav_profile, $user['username']), get_profile_link($uid));
 		add_breadcrumb($lang->goodbyespammer);
 		$lang->goodbyespammer_actionstotake = $lang->sprintf($lang->goodbyespammer_actionstotake, $user['username']);
@@ -669,12 +669,12 @@ function goodbyespammer()
 function goodbyespammer_profile()
 {
 	global $mybb, $lang, $cache, $templates, $memprofile, $modoptions;
-	
-	
+
+
 	$groups = explode(",", $mybb->settings['goodbyespammergroups']);
 	$bangroup = $mybb->settings['goodbyespammerbangroup'];
 	$usergroups = $cache->read('usergroups');
-	
+
 	if(goodbyespammer_show($memprofile['postnum'], $memprofile['usergroup']))
 	{
 		$lang->load("goodbyespammer");
@@ -687,11 +687,17 @@ function goodbyespammer_profile()
 function goodbyespammer_postbit(&$post)
 {
 	global $mybb, $lang, $cache, $theme, $templates;
-	
-	if(goodbyespammer_show($post['postnum'], $post['usergroup']))
+	static $goodbyespammer_profile;
+
+	if(!isset($goodbyespammer_profile))
 	{
 		$lang->load("goodbyespammer");
-		$lang->goodbyespammer_profile  = $lang->sprintf($lang->goodbyespammer_profile, $post['username']);
+		$goodbyespammer_profile = $lang->goodbyespammer_profile;
+	}
+
+	if(goodbyespammer_show($post['postnum'], $post['usergroup']))
+	{
+		$lang->goodbyespammer_profile = $lang->sprintf($goodbyespammer_profile, $post['username']);
 		eval("\$goodbyespammer_postbit = \"".$templates->get('goodbyespammer_postbit')."\";");
 		$post['goodbyespammer'] = $goodbyespammer_postbit;
 	}
@@ -700,12 +706,12 @@ function goodbyespammer_postbit(&$post)
 function goodbyespammer_show($post_count, $usergroup)
 {
 	global $mybb, $cache;
-	
+
 	// only show this if the current user has permission to use it and the user has less than the post limit for using this tool
 	$groups = explode(",", $mybb->settings['goodbyespammergroups']);
 	$bangroup = $mybb->settings['goodbyespammerbangroup'];
 	$usergroups = $cache->read('usergroups');
-	
+
 	return (in_array($mybb->user['usergroup'], $groups) && !$usergroups[$usergroup]['cancp'] && !$usergroups[$usergroup]['canmodcp'] && !$usergroups[$usergroup]['issupermod'] && (str_replace($mybb->settings['thousandssep'], '', $post_count) <= $mybb->settings['goodbyespammerpostlimit'] || $mybb->settings['goodbyespammerpostlimit'] == 0) && $usergroup != $bangroup && $usergroups[$usergroup]['isbannedgroup'] != 1);
 }
 ?>
